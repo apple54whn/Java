@@ -73,7 +73,7 @@
 
 ## 6.2 Collection（java.util）
 
-![image-20191007235251066](images/image-20191007235251066.png)
+![image-20191007235251066](./images/image-20191007235251066.png)
 
 - `Collection`是所有**单列集合**的**父接口**，因此在Collection中定义了单列集合(List和Set)通用的一些方法，这些方法可用于操作所有的单列集合。由于**其`Override`了`toString()`方法**，所以可以直接打印其内容。
 - 注意：添加**自定义元素**到`Collection`集合中时，需要**重写**该元素所属类的`equals()`
