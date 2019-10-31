@@ -244,9 +244,9 @@
 - **字节流（8bit）** ：以字节为单位，读写数据的流。
 - **字符流（16bit）** ：以字符为单位，读写数据的流。
 
-![](images\IO流.PNG)
+![](images/IO%E6%B5%81-2539215.PNG)
 
-![image-20191027162548565](images/image-20191027162548565.png)
+![image-20191027162548565](images/image-20191027162548565-2539215.png)
 
 ## 8.3 InputStream、OutputStream
 
@@ -367,7 +367,7 @@
 
 * 当指定了**编码**，它所对应的**字符集**自然就指定了，所以**编码**才是我们最终要关心的
 
-    ![](images\1_charset.jpg)
+    ![](images/1_charset-2539215.jpg)
 
 - **ASCII字符集**
     - ASCII（American Standard Code for Information Interchange，美国信息交换标准代码）是基于拉丁字母的一套电脑编码系统，用于显示现代英语，主要包括控制字符（回车键、退格、换行键等）和可显示字符（英文大小写字符、阿拉伯数字和西文符号）。
@@ -634,6 +634,7 @@
 
         ```java
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        
         ```
 
 
@@ -676,6 +677,7 @@
             ps.close();
           }
         }
+        
         ```
 
         
@@ -738,7 +740,7 @@
 
     
 
-![](images\3_xuliehua.jpg)
+![](images/3_xuliehua-2539215.jpg)
 
 `ObjectOutputStream`：把**Java对象**按照**流的方式写入文本文件保存或者在网络中传输**
 
@@ -811,6 +813,7 @@ RandomAccessFile插入效果替代 StringBuilder
     	System.out.println(lnr.getLineNumber()+":"+line);
     }
     lnr.close();
+    
     ```
 
 
@@ -864,6 +867,7 @@ public class HandleException1 {
         }
     }
 }
+
 ```
 
 ### JDK7的处理
@@ -876,6 +880,7 @@ try (创建流对象语句，如果有多个使用';'隔开) {
 } catch (IOException e) {
 	e.printStackTrace();
 }
+
 ```
 
 ### JDK9的处理
@@ -892,7 +897,14 @@ Resource resource2 = new Resource("resource2");
 try (resource1; resource2) {
      // 使用对象
 }
+
 ```
+
+
+
+## `org.apache.common.io.FileUtils`
+
+工作中常用 apache 提供的工具类
 
 
 
@@ -966,6 +978,7 @@ private static void method5(String srcFilePath, String destFilePath) throws IOEx
 	br.close();
 	bw.close();
 }
+
 ```
 
 ### 复制二进制数据的4种方式——字节流
@@ -1020,6 +1033,7 @@ private static void method4(String srcFilePath, String destFilePath) throws IOEx
   bis.close();
   bos.close();
 }
+
 ```
 
 ### 把集合中的数据存储到文本文件中
@@ -1036,6 +1050,7 @@ for (Student s : arrayList) {
 	bw.flush();
 }
 bw.close();
+
 ```
 
 ### 把文本文件中的数据读取到集合并遍历集合
@@ -1049,6 +1064,7 @@ while((line=br.readLine())!=null) {
 }
 for(String s :arrayList) 
 	System.out.println(s);
+
 ```
 
 ### 在一个存储人名的文件中随机输出一个人名
@@ -1064,6 +1080,7 @@ br.close();
 Random r = new Random();
 int random = r.nextInt(arrayList.size());
 System.out.println("幸运的猪："+arrayList.get(random));
+
 ```
 
 ### 复制单级文件夹中指定的文件并修改名称
@@ -1079,6 +1096,7 @@ for (File file : fileList) {
     File newFile = new File(destPath, newName);
     copyFile(file, newFile);//看下题
 }
+
 ```
 
 ### 复制多级文件夹(整个文件夹复制到目的文件夹目录下)
@@ -1114,6 +1132,7 @@ private static void copyFile(File srcFilePath, File destFilePath) throws IOExcep
 	bis.close();
 	bos.close();
 }
+
 ```
 
 ### 将一个文件中的字符串每一行排序后写入另一个文件中
@@ -1131,6 +1150,7 @@ while((line=br.readLine())!=null) {
 }
 br.close();
 bw.close();
+
 ```
 
 
