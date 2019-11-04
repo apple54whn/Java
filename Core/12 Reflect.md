@@ -141,6 +141,8 @@
 
 ## 12.2 Class
 
+### Class 简介
+
 * **获取**字节码文件`Class`类型对象 
 
     *   `Calss<Student> c = Student.class`通过**类名**得到。多用于参数传递
@@ -241,335 +243,331 @@
 
 
 
-*   反射获取完整类结构
+### 反射获取完整类结构
 
-    ```java
-    public class Creature<T> implements Serializable {
-      private char gender;
-      public double weight;
-    
-      private void breath(){
-        System.out.println("生物呼吸");
-      }
-    
-      public void eat(){
-        System.out.println("生物吃东西");
-      }
-    }
-    //--------------------------
-    public interface MyInterface {
-        void info();
-    }
-    //--------------------------
-    @Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface MyAnnotation {
-        String value() default "hello";
-    
-    }
-    //--------------------------
-    @MyAnnotation(value="hi")
-    public class Person extends Creature<String> implements Comparable<String>,MyInterface{
-    
-      private String name;
-      int age;
-      public int id;
-    
-      public Person(){}
-    
-      @MyAnnotation(value="abc")
-      private Person(String name){
-        this.name = name;
-      }
-    
-      Person(String name,int age){
-        this.name = name;
-        this.age = age;
-      }
-      @MyAnnotation
-      private String show(String nation){
-        System.out.println("我的国籍是：" + nation);
-        return nation;
-      }
-    
-      public String display(String interests,int age) throws NullPointerException,ClassCastException{
-        return interests + age;
-      }
-    
-      @Override
-      public void info() {
-        System.out.println("我是一个人");
-      }
-    
-      @Override
-      public int compareTo(String o) {
-        return 0;
-      }
-    
-      private static void showDesc(){
-        System.out.println("我是一个可爱的人");
-      }
-    
-      @Override
-      public String toString() {
-        return "Person{" +
-          "name='" + name + '\'' +
-          ", age=" + age +
-          ", id=" + id +
-          '}';
-      }
-    }
-    ```
+```java
+public class Creature<T> implements Serializable {
+  private char gender;
+  public double weight;
 
-*   Field
+  private void breath(){
+    System.out.println("生物呼吸");
+  }
 
-    ```java
-    public class FieldTest {
-    
-      @Test
-      public void test1(){
-    
-        Class clazz = Person.class;
-    
-        //获取属性结构
-        //getFields():获取当前运行时类及其父类中声明为public访问权限的属性
-        Field[] fields = clazz.getFields();
-        for(Field f : fields){
-          System.out.println(f);
-        }
-        System.out.println();
-    
-        //getDeclaredFields():获取当前运行时类中声明的所有属性。（不包含父类中声明的属性）
-        Field[] declaredFields = clazz.getDeclaredFields();
-        for(Field f : declaredFields){
-          System.out.println(f);
-        }
-      }
-    
-      //权限修饰符  数据类型 变量名
-      @Test
-      public void test2(){
-        Class clazz = Person.class;
-        Field[] declaredFields = clazz.getDeclaredFields();
-        for(Field f : declaredFields){
-          //1.权限修饰符
-          int modifier = f.getModifiers();
-          System.out.print(Modifier.toString(modifier) + "\t");
-    
-          //2.数据类型
-          Class type = f.getType();
-          System.out.print(type.getName() + "\t");
-    
-          //3.变量名
-          String fName = f.getName();
-          System.out.print(fName);
-          System.out.println();
-        }
-      }
+  public void eat(){
+    System.out.println("生物吃东西");
+  }
+}
+//--------------------------
+public interface MyInterface {
+    void info();
+}
+//--------------------------
+@Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+    String value() default "hello";
+
+}
+//--------------------------
+@MyAnnotation(value="hi")
+public class Person extends Creature<String> implements Comparable<String>,MyInterface{
+
+  private String name;
+  int age;
+  public int id;
+
+  public Person(){}
+
+  @MyAnnotation(value="abc")
+  private Person(String name){
+    this.name = name;
+  }
+
+  Person(String name,int age){
+    this.name = name;
+    this.age = age;
+  }
+  @MyAnnotation
+  private String show(String nation){
+    System.out.println("我的国籍是：" + nation);
+    return nation;
+  }
+
+  public String display(String interests,int age) throws NullPointerException,ClassCastException{
+    return interests + age;
+  }
+
+  @Override
+  public void info() {
+    System.out.println("我是一个人");
+  }
+
+  @Override
+  public int compareTo(String o) {
+    return 0;
+  }
+
+  private static void showDesc(){
+    System.out.println("我是一个可爱的人");
+  }
+
+  @Override
+  public String toString() {
+    return "Person{" +
+      "name='" + name + '\'' +
+      ", age=" + age +
+      ", id=" + id +
+      '}';
+  }
+}
+```
+
+#### Field
+
+```java
+public class FieldTest {
+
+  @Test
+  public void test1(){
+
+    Class clazz = Person.class;
+
+    //获取属性结构
+    //getFields():获取当前运行时类及其父类中声明为public访问权限的属性
+    Field[] fields = clazz.getFields();
+    for(Field f : fields){
+      System.out.println(f);
     }
-    ```
+    System.out.println();
 
-*   Method
+    //getDeclaredFields():获取当前运行时类中声明的所有属性。（不包含父类中声明的属性）
+    Field[] declaredFields = clazz.getDeclaredFields();
+    for(Field f : declaredFields){
+      System.out.println(f);
+    }
+  }
 
-    ```java
-    public class MethodTest {
-    
-      @Test
-      public void test1(){
-    
-        Class clazz = Person.class;
-    
-        //getMethods():获取当前运行时类及其所有父类中声明为public权限的方法
-        Method[] methods = clazz.getMethods();
-        for(Method m : methods){
-          System.out.println(m);
-        }
-        System.out.println();
-        //getDeclaredMethods():获取当前运行时类中声明的所有方法。（不包含父类中声明的方法）
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-        for(Method m : declaredMethods){
-          System.out.println(m);
-        }
+  //权限修饰符  数据类型 变量名
+  @Test
+  public void test2(){
+    Class clazz = Person.class;
+    Field[] declaredFields = clazz.getDeclaredFields();
+    for(Field f : declaredFields){
+      //1.权限修饰符
+      int modifier = f.getModifiers();
+      System.out.print(Modifier.toString(modifier) + "\t");
+
+      //2.数据类型
+      Class type = f.getType();
+      System.out.print(type.getName() + "\t");
+
+      //3.变量名
+      String fName = f.getName();
+      System.out.print(fName);
+      System.out.println();
+    }
+  }
+}
+```
+
+#### Method
+
+```java
+public class MethodTest {
+
+  @Test
+  public void test1(){
+
+    Class clazz = Person.class;
+
+    //getMethods():获取当前运行时类及其所有父类中声明为public权限的方法
+    Method[] methods = clazz.getMethods();
+    for(Method m : methods){
+      System.out.println(m);
+    }
+    System.out.println();
+    //getDeclaredMethods():获取当前运行时类中声明的所有方法。（不包含父类中声明的方法）
+    Method[] declaredMethods = clazz.getDeclaredMethods();
+    for(Method m : declaredMethods){
+      System.out.println(m);
+    }
+  }
+
+  /*
+    @Xxxx
+    权限修饰符  返回值类型  方法名(参数类型1 形参名1,...) throws XxxException{}
+     */
+  @Test
+  public void test2(){
+    Class clazz = Person.class;
+    Method[] declaredMethods = clazz.getDeclaredMethods();
+    for(Method m : declaredMethods){
+      //1.获取方法声明的注解
+      Annotation[] annos = m.getAnnotations();
+      for(Annotation a : annos){
+        System.out.println(a);
       }
-    
-      /*
-        @Xxxx
-        权限修饰符  返回值类型  方法名(参数类型1 形参名1,...) throws XxxException{}
-         */
-      @Test
-      public void test2(){
-        Class clazz = Person.class;
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-        for(Method m : declaredMethods){
-          //1.获取方法声明的注解
-          Annotation[] annos = m.getAnnotations();
-          for(Annotation a : annos){
-            System.out.println(a);
+
+      //2.权限修饰符
+      System.out.print(Modifier.toString(m.getModifiers()) + "\t");
+
+      //3.返回值类型
+      System.out.print(m.getReturnType().getName() + "\t");
+
+      //4.方法名
+      System.out.print(m.getName());
+      System.out.print("(");
+      //5.形参列表
+      Class[] parameterTypes = m.getParameterTypes();
+      if(!(parameterTypes == null && parameterTypes.length == 0)){
+        for(int i = 0;i < parameterTypes.length;i++){
+
+          if(i == parameterTypes.length - 1){
+            System.out.print(parameterTypes[i].getName() + " args_" + i);
+            break;
           }
-    
-          //2.权限修饰符
-          System.out.print(Modifier.toString(m.getModifiers()) + "\t");
-    
-          //3.返回值类型
-          System.out.print(m.getReturnType().getName() + "\t");
-    
-          //4.方法名
-          System.out.print(m.getName());
-          System.out.print("(");
-          //5.形参列表
-          Class[] parameterTypes = m.getParameterTypes();
-          if(!(parameterTypes == null && parameterTypes.length == 0)){
-            for(int i = 0;i < parameterTypes.length;i++){
-    
-              if(i == parameterTypes.length - 1){
-                System.out.print(parameterTypes[i].getName() + " args_" + i);
-                break;
-              }
-    
-              System.out.print(parameterTypes[i].getName() + " args_" + i + ",");
-            }
+
+          System.out.print(parameterTypes[i].getName() + " args_" + i + ",");
+        }
+      }
+      System.out.print(")");
+
+      //6.抛出的异常
+      Class[] exceptionTypes = m.getExceptionTypes();
+      if(exceptionTypes.length > 0){
+        System.out.print("throws ");
+        for(int i = 0;i < exceptionTypes.length;i++){
+          if(i == exceptionTypes.length - 1){
+            System.out.print(exceptionTypes[i].getName());
+            break;
           }
-          System.out.print(")");
-    
-          //6.抛出的异常
-          Class[] exceptionTypes = m.getExceptionTypes();
-          if(exceptionTypes.length > 0){
-            System.out.print("throws ");
-            for(int i = 0;i < exceptionTypes.length;i++){
-              if(i == exceptionTypes.length - 1){
-                System.out.print(exceptionTypes[i].getName());
-                break;
-              }
-              System.out.print(exceptionTypes[i].getName() + ",");
-            }
-          }
-          System.out.println();
+          System.out.print(exceptionTypes[i].getName() + ",");
         }
       }
+      System.out.println();
     }
-    ```
+  }
+}
+```
 
-*   Other
+#### Other
 
-    ```java
-    public class OtherTest {
-    
-      /*
-        获取构造器结构
-         */
-      @Test
-      public void test1(){
-    
-        Class clazz = Person.class;
-        //getConstructors():获取当前运行时类中声明为public的构造器
-        Constructor[] constructors = clazz.getConstructors();
-        for(Constructor c : constructors){
-          System.out.println(c);
-        }
-    
-        System.out.println();
-        //getDeclaredConstructors():获取当前运行时类中声明的所有的构造器
-        Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
-        for(Constructor c : declaredConstructors){
-          System.out.println(c);
-        }
-    
-      }
-    
-      /*
-        获取运行时类的父类
-         */
-      @Test
-      public void test2(){
-        Class clazz = Person.class;
-    
-        Class superclass = clazz.getSuperclass();
-        System.out.println(superclass);
-      }
-    
-      /*
-        获取运行时类的带泛型的父类
-         */
-      @Test
-      public void test3(){
-        Class clazz = Person.class;
-    
-        Type genericSuperclass = clazz.getGenericSuperclass();
-        System.out.println(genericSuperclass);
-      }
-    
-      /*
-        获取运行时类的带泛型的父类的泛型
-        代码：逻辑性代码  vs 功能性代码
-         */
-      @Test
-      public void test4(){
-        Class clazz = Person.class;
-    
-        Type genericSuperclass = clazz.getGenericSuperclass();
-        ParameterizedType paramType = (ParameterizedType) genericSuperclass;
-        //获取泛型类型
-        Type[] actualTypeArguments = paramType.getActualTypeArguments();
-        //        System.out.println(actualTypeArguments[0].getTypeName());
-        System.out.println(((Class)actualTypeArguments[0]).getName());
-      }
-    
-      /*
-        获取运行时类实现的接口
-         */
-      @Test
-      public void test5(){
-        Class clazz = Person.class;
-    
-        Class[] interfaces = clazz.getInterfaces();
-        for(Class c : interfaces){
-          System.out.println(c);
-        }
-    
-        System.out.println();
-        //获取运行时类的父类实现的接口
-        Class[] interfaces1 = clazz.getSuperclass().getInterfaces();
-        for(Class c : interfaces1){
-          System.out.println(c);
-        }
-    
-      }
-      /*
-       获取运行时类所在的包
-        */
-      @Test
-      public void test6(){
-        Class clazz = Person.class;
-    
-        Package pack = clazz.getPackage();
-        System.out.println(pack);
-      }
-    
-      /*
-        获取运行时类声明的注解
-       */
-      @Test
-      public void test7(){
-        Class clazz = Person.class;
-    
-        Annotation[] annotations = clazz.getAnnotations();
-        for(Annotation annos : annotations){
-          System.out.println(annos);
-        }
-      }
-    
+```java
+public class OtherTest {
+
+  /*
+    获取构造器结构
+     */
+  @Test
+  public void test1(){
+
+    Class clazz = Person.class;
+    //getConstructors():获取当前运行时类中声明为public的构造器
+    Constructor[] constructors = clazz.getConstructors();
+    for(Constructor c : constructors){
+      System.out.println(c);
     }
-    ```
 
-    
+    System.out.println();
+    //getDeclaredConstructors():获取当前运行时类中声明的所有的构造器
+    Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
+    for(Constructor c : declaredConstructors){
+      System.out.println(c);
+    }
 
-    
+  }
 
-    
+  /*
+    获取运行时类的父类
+     */
+  @Test
+  public void test2(){
+    Class clazz = Person.class;
+
+    Class superclass = clazz.getSuperclass();
+    System.out.println(superclass);
+  }
+
+  /*
+    获取运行时类的带泛型的父类
+     */
+  @Test
+  public void test3(){
+    Class clazz = Person.class;
+
+    Type genericSuperclass = clazz.getGenericSuperclass();
+    System.out.println(genericSuperclass);
+  }
+
+  /*
+    获取运行时类的带泛型的父类的泛型
+    代码：逻辑性代码  vs 功能性代码
+     */
+  @Test
+  public void test4(){
+    Class clazz = Person.class;
+
+    Type genericSuperclass = clazz.getGenericSuperclass();
+    ParameterizedType paramType = (ParameterizedType) genericSuperclass;
+    //获取泛型类型
+    Type[] actualTypeArguments = paramType.getActualTypeArguments();
+    //        System.out.println(actualTypeArguments[0].getTypeName());
+    System.out.println(((Class)actualTypeArguments[0]).getName());
+  }
+
+  /*
+    获取运行时类实现的接口
+     */
+  @Test
+  public void test5(){
+    Class clazz = Person.class;
+
+    Class[] interfaces = clazz.getInterfaces();
+    for(Class c : interfaces){
+      System.out.println(c);
+    }
+
+    System.out.println();
+    //获取运行时类的父类实现的接口
+    Class[] interfaces1 = clazz.getSuperclass().getInterfaces();
+    for(Class c : interfaces1){
+      System.out.println(c);
+    }
+
+  }
+  /*
+   获取运行时类所在的包
+    */
+  @Test
+  public void test6(){
+    Class clazz = Person.class;
+
+    Package pack = clazz.getPackage();
+    System.out.println(pack);
+  }
+
+  /*
+    获取运行时类声明的注解
+   */
+  @Test
+  public void test7(){
+    Class clazz = Person.class;
+
+    Annotation[] annotations = clazz.getAnnotations();
+    for(Annotation annos : annotations){
+      System.out.println(annos);
+    }
+  }
+
+}
+```
 
 
 
-### 通过配置文件运行类中方法
+### 习题
+
+#### 通过配置文件运行类中方法
 
 ```java
 public class Demo{
@@ -595,7 +593,7 @@ public class Demo{
 }
 ```
 
-### 通过反射越过泛型检查
+#### 通过反射越过泛型检查
 
 * ArrayList`<Integer>`对象，添加一个字符串数据 
 * **泛型机制是给编译器看的，运行时没有**。通过看add底层代码发现传入的是`<E>`是Object型
@@ -609,7 +607,7 @@ Method method = c.getMethod("add", Object.class);
 method.invoke(arrayList, "hello");
 ```
 
-### 通过反射给任意的一个对象的任意的属性赋值为指定的值
+#### 通过反射给任意的一个对象的任意的属性赋值为指定的值
 
 ```java
 public void setProperty(Object obj, String propertyName, Object value) throws Exception{
