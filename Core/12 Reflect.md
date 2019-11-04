@@ -184,66 +184,140 @@
 
         结论：只要数组的**元素类型**和**纬度**一样，就是同一个 Class
 
-* **通过反射分析类的能力**
+* **通过反射分析类的能力**：**域(成员变量)**、**构造器**、**方法**
 
-    * **域(成员变量)**、**构造器**、**方法**
+    * **不带Declare**返回类提供的**public**域、方法和构造器的**数组**，包括**超类的公有成员**
 
-        * **不带Declare**返回类提供的**public**域、方法和构造器的**数组**，包括**超类的公有成员**
+    * **带Declare**返回类提供的**全部**域、方法和构造器，**包括私有和保护成员**，但不包括超类的成员
 
-        * **带Declare**返回类提供的**全部**域、方法和构造器，**包括私有和保护成员**，但不包括超类的成员
+        操作私有成员时**`setAccessible(flag)`**中flag设置为true
 
-            操作私有成员时**`setAccessible(flag)`**中flag设置为true
-
-        ```java
-        Class<Person> clazz = Person.class;
-        
-        //若类中没有域(成员变量)或者Class对象描述的是基本类型或数组类型，则返回一个长度为0的数组
-        Field get(Declare)Field(String name)
-        Field[] get(Declare)Fields()
-        
-        Method get(Declare)Method(String name, Class<?>... parameterTypes)
-        Method[] get(Declare)Methods()
-        
-        //使用Class对象的newInstance()来创建！但该类必须提供空参构造器，且权限必须够，通常为 public。Java9 及之后过时
-        Person o = clazz.getInstance();
-        //可以通过Constructor对象的newInstance(可传递参数列表)来创建对象；
-        Constructor<T> get(Declare)Construcotr(Class<?>... parameterTypes)//返回一个构造器
-        Constructor[] get(Declare)Construcotrs()
-        //以上其底层都是调用构造器来创建对象
-        
-        setAccessible(boolean b)//为以上三种反射对象设置可访问标志，true为屏蔽java语言访问检查
-        ```
-
-        ```java
-        Class<Person> clazz = Person.class;
-        
-        // 单个构造,无参构造可不带.class;传递参数类型
-        Constructor<Person> con = clazz.getConstructor(String.class, int.class, String.class);
-        Person obj = con.newInstance("zhangsan", 33, "beijing");
-        //Object o = c.newInstance();//若调用空参构造可以直接使用Class类的newInstance()方法。在Java9开始弃用
-        String name = con.getName();//获取构造方法名称
-         
-        // 单个域、属性
-        Field field = clazz.getDeclaredField("name");
-        field.setAccessible(true);
-        field.set(obj, "lisi");//set
-        Object objField = field.get(obj);//get
-        String name = field.getName();//获取域名即成员变量名
-        System.out.println(objField);
-        
-        // 单个方法,不带参可不写.class;传递参数类型
-        Method method = clazz.getDeclaredMethod("add", int.class, int.class);
-        Object objMethod = method.invoke(obj, 10, 20);
-        //操作静态方法时，第一个参数为null，不需要实例
-        Object objMethod = method.invoke(null, 10, 20);
-        //获取方法名
-        String name = method.getName();
-        System.out.println(objMethod);
-        ```
+    ```java
+Class<Person> clazz = Person.class;
+    
+    //若类中没有域(成员变量)或者Class对象描述的是基本类型或数组类型，则返回一个长度为0的数组
+    Field get(Declare)Field(String name)
+    Field[] get(Declare)Fields()
+    
+    Method get(Declare)Method(String name, Class<?>... parameterTypes)
+    Method[] get(Declare)Methods()
+    
+    //使用Class对象的newInstance()来创建！但该类必须提供空参构造器，且权限必须够，通常为 public。Java9 及之后过时
+    Person o = clazz.getInstance();
+    //可以通过Constructor对象的newInstance(可传递参数列表)来创建对象；
+    Constructor<T> get(Declare)Construcotr(Class<?>... parameterTypes)//返回一个构造器
+    Constructor[] get(Declare)Construcotrs()
+    //以上其底层都是调用构造器来创建对象
+    
+    setAccessible(boolean b)//为以上三种反射对象设置可访问标志，true为屏蔽java语言访问检查
+    ```
+    
+    ```java
+Class<Person> clazz = Person.class;
+    
+    // 单个构造,无参构造可不带.class;传递参数类型
+    Constructor<Person> con = clazz.getConstructor(String.class, int.class, String.class);
+    Person obj = con.newInstance("zhangsan", 33, "beijing");
+    //Object o = c.newInstance();//若调用空参构造可以直接使用Class类的newInstance()方法。在Java9开始弃用
+    String name = con.getName();//获取构造方法名称
+     
+    // 单个域、属性
+    Field field = clazz.getDeclaredField("name");
+    field.setAccessible(true);
+    field.set(obj, "lisi");//set
+    Object objField = field.get(obj);//get
+    String name = field.getName();//获取域名即成员变量名
+    System.out.println(objField);
+    
+    // 单个方法,不带参可不写.class;传递参数类型
+    Method method = clazz.getDeclaredMethod("add", int.class, int.class);
+    Object objMethod = method.invoke(obj, 10, 20);
+    //操作静态方法时，第一个参数为null，不需要实例
+    Object objMethod = method.invoke(null, 10, 20);
+    //获取方法名
+    String name = method.getName();
+    System.out.println(objMethod);
+    ```
 
 
 
-### 反射获取完整类结构
+### 获取运行时类的完整结构 
+
+*   实现的全部接口
+
+    *   `public Class<?>[] getInterfaces() `
+
+        确定此对象所表示的类或接口实现的接口。 
+
+*   所继承的父类
+
+    *   `public Class<? Super T> getSuperclass()`
+
+        返回表示此 Class 所表示的实体(类、接口、基本类型)的父类的 Class。 
+
+*   全部的构造器
+
+    *   `public Constructor<T>[] getConstructors()`
+
+        返回此 Class 对象所表示的类的所有public构造方法。 
+
+    *   `public Constructor<T>[] getDeclaredConstructors() `
+
+        返回此 Class 对象表示的类声明的所有构造方法。
+
+    *   Constructor类中：
+
+        *   取得修饰符：`public int getModifiers()`
+        *   取得方法名称：`public String getName()`
+        *   取得参数的类型：`public Class<?>[] getParameterTypes()`
+
+*   全部的方法
+
+    *   `public Method[] getMethods() `
+
+        返回此Class对象所表示的类或接口的public的方法
+
+    *   `public Method[] getDeclaredMethods() `
+
+        返回此Class对象所表示的类或接口的全部方法
+
+    *   Method类中：
+
+        *   `public Class<?> getReturnType()`取得全部的返回值
+        *   `public Class<?>[] getParameterTypes()`取得全部的参数 
+        *   `public int getModifiers()`取得修饰符
+        *   `public Class<?>[] getExceptionTypes()`取得异常信息 
+
+*   全部的Field
+
+    *   `public Field[] getFields() `
+
+        返回此Class对象所表示的类或接口的public的Field。 
+
+    *   `public Field[] getDeclaredFields() `
+
+        返回此Class对象所表示的类或接口的全部Field。 
+
+    *   Field方法中：
+
+        *   `public int getModifiers()` 以整数形式返回此Field的修饰符 
+        *   `public Class<?> getType()` 得到Field的属性类型 
+        *   `public StringgetName()` 返回Field的名称。 
+
+*   Annotation相关
+
+    *   `get Annotation(Class<T> annotationClass) `
+    *   `getDeclaredAnnotations()`
+
+*   Generic
+
+    *   获取父类泛型类型：`Type getGenericSuperclass() `
+    *   泛型类型：`ParameterizedType `
+    *   获取实际的泛型类型参数数组：`getActualTypeArguments() `
+
+*   类所在的包
+
+    *   `Package getPackage()`
 
 ```java
 public class Creature<T> implements Serializable {
@@ -355,8 +429,8 @@ public class FieldTest {
     Field[] declaredFields = clazz.getDeclaredFields();
     for(Field f : declaredFields){
       //1.权限修饰符
-      int modifier = f.getModifiers();
-      System.out.print(Modifier.toString(modifier) + "\t");
+      int modifier = f.getModifiers();// 可在 Modifier 类中找到 int 对应的权限修饰符
+      System.out.print(Modifier.toString(modifier) + "\t");// 这样也可以获取权限修饰符名称
 
       //2.数据类型
       Class type = f.getType();
@@ -512,7 +586,7 @@ public class OtherTest {
     ParameterizedType paramType = (ParameterizedType) genericSuperclass;
     //获取泛型类型
     Type[] actualTypeArguments = paramType.getActualTypeArguments();
-    //        System.out.println(actualTypeArguments[0].getTypeName());
+    //System.out.println(actualTypeArguments[0].getTypeName());
     System.out.println(((Class)actualTypeArguments[0]).getName());
   }
 
@@ -527,8 +601,8 @@ public class OtherTest {
     for(Class c : interfaces){
       System.out.println(c);
     }
-
     System.out.println();
+    
     //获取运行时类的父类实现的接口
     Class[] interfaces1 = clazz.getSuperclass().getInterfaces();
     for(Class c : interfaces1){
@@ -562,6 +636,58 @@ public class OtherTest {
 
 }
 ```
+
+
+
+
+
+### * 获取运行时类的指定结构
+
+#### 调用指定方法
+
+通过反射，调用类中的方法，通过Method类完成。步骤: 
+
+1.  通过`Class`类的`getMethod(String name,Class...parameterTypes)`方法取得 一个`Method`对象，并设置此方法操作时所需要的参数类型。 
+2.  之后使用`Object invoke(Object obj, Object[] args)`进行调用，并向方法中传递要设置的obj对象的参数信息。 
+
+`Object invoke(Object obj, Object ... args)`
+
+*   `Object` 对应原方法的返回值，若原方法无返回值，此时返回`null`
+*   若原方法若为静态方法，此时形参`Object obj`可为`null `，即不需要实例对象
+*   若原方法形参列表为空，则`Object[] args`为`null `
+*   若原方法声明为`private`，则需要在调用此`invoke()`方法前，显式调用方法对象的`setAccessible(true)`方法，将可访问`private`的方法。 
+
+
+
+#### 调用指定属性
+
+在反射机制中，可以直接通过Field类操作类中的属性，通过Field类提供的set()和 get()方法就可以完成设置和取得属性内容的操作。 
+
+*   `public Field getField(String name)`
+
+    返回此`Class`对象表示的类或接口的指定的`public`的`Field`。 
+
+*   `public Field getDeclaredField(String name)`
+
+    返回此`Class`对象表示的类或接口的指定的`Field`。 
+
+*   在Field中：
+
+    *   `public Object get(Object obj)` 取得指定对象`obj`上此`Field`的属性内容 
+    *   `public void set(Object obj,Object value)` 设置指定对象`obj`上此`Field`的属性内容 
+
+
+
+#### 关于setAccessible方法的使用
+
+*   `Method`和`Field`、`Constructor`对象都有`setAccessible()`方法。
+*   `setAccessible`启动和禁用访问安全检查的开关。
+*   参数值为`true`则指示反射的对象在使用时应该取消Java语言访问检查。 
+    *   提高反射的效率。如果代码中必须用反射，而该句代码需要频繁的被调用，那么请设置为true。 
+    *   使得原本无法访问的私有成员也可以访问
+*   参数值为`false`则指示反射的对象应该实施Java语言访问检查。 
+
+
 
 
 
@@ -630,116 +756,381 @@ public static void main(String[] args) throws Exception {
 
 
 
-## 12.4 动态代理
+## 12.4 代理模式
 
-* **代理**：本来应该自己做的事情，却请了别人来做。**代理对象和目标对象需实现同一接口(有同样的方法)**
+* **代理**：使用一个代理将对象包装起来，然后用该代理对象取代原始对象。任何对原始对象的调用都要通过代理，代理对象决定是否以及何时将方法调用转到原始对象上。
+* 静态代理和动态代理两者区别在于代理对象的生成模式
 
-* **代理模式**（两者区别在于代理对象的生成模式）
+### 静态代理
 
-    1. 静态代理：字节码一上来就创建好，并完成加载。装饰者模式就是静态代理的一种体现。 
+代理类和目标对象的类（字节码文件）都是在**编译期间**确定下来，不利于程序的扩展。同时每一个代理类只能为一个接口服务，这样一来程序开发中必然产生过多的代理。最好可以通过一个代理类完成全部的代理功能。 **装饰者模式**就是静态代理的一种体现。 
 
-    2. ==**动态代理**==：**程序运行过程**，在**内存中**动态的为目标对象**创建**一个虚拟的代理对象。字节码随用随创建，随用随加载。 
+```java
+interface ClothFactory{
+  void produceCloth();
+}
 
-        `java.lang.reflect`包下提供了一个`Proxy`类和一个`InvocationHandler`接口，通过使用这个类和接口就可以生成动态代理对象。JDK提供的代理要求**被代理类最少实现一个接口**。 
+//代理类
+class ProxyClothFactory implements ClothFactory{
 
-        - 实现步骤：
+  private ClothFactory factory;//用被代理类对象进行实例化
 
-            1. 代理对象和真实对象实现相同接口
-            2. `代理对象 = Proxy.newProxyInstance();`
-            3. 使用代理对象调用方法
-            4. 增强方法
+  public ProxyClothFactory(ClothFactory factory){
+    this.factory = factory;
+  }
 
-        - **创建指定接口的代理类对象实例**（类加载器，Class对象数组，调用处理器）
+  @Override
+  public void produceCloth() {
+    System.out.println("代理工厂做一些准备工作");
 
-            ```java
-            static Object newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHander hander)
-            //其中loader是与目标对象相同的类加载器
-            //interfaces是接口的字节码对象数组 new Class<?>[]{interface.class}
-            ```
+    factory.produceCloth();
 
-            其中第三个参数为**调用处理器**，是实现了`InvocationHandler`接口的类对象，重写`invoke`方法
+    System.out.println("代理工厂做一些后续的收尾工作");
+  }
+}
 
-            ```java
-            public static void main(String[] args) {
-                public final Target target = new Target();//被代理的目标对象
-            
-                //动态创建代理对象
-                TargetInterface proxy = (TargetInterface) Proxy.newProxyInstance(
-                    target.getClass().getClassLoader(), 
-                    target.getClass().getInterfaces(), 
-                    new InvocationHandler() {
-                        @Override
-                        //被执行几次?---看代理对象调用方法几次;代理对象调用接口相应方法 都是调用该invoke方法
-                        /** proxy:是代理对象，一般不用
-            			 * method:代理对象调用的方法被封装为Method对象
-            			 * args:代理对象调用方法时传递的实际参数，封装为数组，即参数列表
-            			 */
-                        public Object invoke(Object proxy,Method method,Object[] args) throws Throwable{
-                            //反射知识点。使用目标对象调用目标方法并传递参数，返回目标方法的返回值
-                            Object obj = method.invoke(target, args);
-                            //retrun返回的值给代理对象
-                            return invoke;
-                        }
-                    }
-                );
-            	//调用代理对象
-                proxy.method1();//调用invoke---Method：目标对象的method1方法  args：null  返回值null
-                String method2 = proxy.method2();//调用invoke---Method:目标对象的method2方法 
-            }
-            ```
+//被代理类
+class NikeClothFactory implements ClothFactory{
 
-        - 增强方式：（invoke方法中）
+  @Override
+  public void produceCloth() {
+    System.out.println("Nike工厂生产一批运动服");
+  }
+}
 
-            1. 增强**返回值**：通过**对`return`返回值的修改**
-            2. 增强**参数列**表：通过**`method.getName()`判断要增强的方法**，并对**参数`args[]`数组进行修改**
-            3. 增强**方法体**执行逻辑：**反射方法`invoke()`执行前后修改**
+public class StaticProxyTest {
+  public static void main(String[] args) {
+    //创建被代理类的对象
+    ClothFactory nike = new NikeClothFactory();
+    //创建代理类的对象
+    ClothFactory proxyClothFactory = new ProxyClothFactory(nike);
 
-------
+    proxyClothFactory.produceCloth();
+  }
+}
+```
 
-* 基于子类的动态代理
 
-    * 提供者：第三方的 CGLib，如果报 asmxxxx 异常，需要导入 `asm.jar`或`org.springframework.cglib.proxy`
 
-    * 要求：被代理类不能用 final 修饰的类（最终类）。 
+### 动态代理
 
-        ```java
-        public static void  main(String[] args) {
-            final Actor actor = new Actor();      
-            Actor cglibActor = (Actor) Enhancer.create(actor.getClass(), new MethodInterceptor() {
-                /** 
-        		 * 执行被代理对象的任何方法，都会经过该方法。在此方法内部就可以对被代理对象的任何 方法进行增强。     
-        		 * 参数：     
-        		   *  前三个和基于接口的动态代理是一样的。     
-        		   *  MethodProxy：当前执行方法的代理对象。     
-        		   *  返回值：当前执行方法的返回值     
-        		 */    
-                @Override    
-                public Object intercept(Object proxy, 
-                                        Method method, 
-                                        Object[] args, 
-                                        MethodProxy methodProxy) throws Throwable {
-                    String name = method.getName();
-                    Float money = (Float) args[0];
-                    Object rtValue = null;     
-                    if("basicAct".equals(name)){ 
-                        //基本演出      
-                        if(money > 2000){       
-                            rtValue = method.invoke(actor, money/2); 
-                        }     
-                    } 
-                    if("dangerAct".equals(name)){ 
-                        //危险演出      
-                        if(money > 5000){ 
-                            rtValue = method.invoke(actor, money/2);      
-                        } 
+**程序运行过程**，在**内存中**动态的为目标对象**创建**一个虚拟的代理对象。字节码随用随创建，随用随加载。 
+
+使用场景：
+
+*   调试
+*   远程方法调用
+
+相比静态代理的优点：抽象角色中(接口)声明的所有方法都被转移到调用处理器一个集中的方法中处理，这样，我们可以更加灵活和统一的处理众多的方法。
+
+### JDK中动态代理
+
+`java.lang.reflect`包下提供了一个`Proxy`类和一个`InvocationHandler`接口，通过使用这个类和接口就可以生成动态代理对象。JDK提供的代理要求**被代理类最少实现一个接口**。 
+
+- 实现步骤：
+
+    1. 代理对象和真实对象实现相同接口
+    2. `代理对象 = Proxy.newProxyInstance();`
+    3. 使用代理对象调用方法
+    4. 增强方法
+
+- **创建指定接口的代理类对象实例**（类加载器，Class对象数组，调用处理器）
+
+    ```java
+    static Object newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHander hander)
+    //其中loader是与目标对象相同的类加载器
+    //interfaces是接口的字节码对象数组 new Class<?>[]{interface.class}
+    ```
+
+    其中第三个参数为**调用处理器**，是实现了`InvocationHandler`接口的类对象，重写`invoke`方法
+
+    ```java
+    public static void main(String[] args) {
+    
+      // 被代理对象
+      /*final*/ Target target = new Target();// Java 8中，只要局部变量事实不变，那么final关键字可以省略
+    
+      // 动态创建代理对象
+      TargetInterface proxy = (TargetInterface) Proxy.newProxyInstance(
+        target.getClass().getClassLoader(), 
+        target.getClass().getInterfaces(), 
+        new InvocationHandler() {
+          /**
+                 * 被执行几次？---看代理对象调用方法几次;代理对象调用接口相应方法，都是调用该invoke方法
+                 * proxy：是代理对象，一般不用
+                 * method：代理对象调用的方法被封装为Method对象
+                 * args：代理对象调用方法时传递的实际参数，封装为数组，即参数列表
+                 */
+          @Override
+          public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            // 反射知识点。使用目标对象调用目标方法并传递参数，返回目标方法的返回值。
+            Object value = method.invoke(target, args);
+            // retrun返回的值给代理对象
+            return value;
+          }
+    
+        });
+      //调用代理对象
+      int add = proxy.add(1, 2);
+    }
+    ```
+
+    ```java
+    public interface TargetInterface {
+        int add(int a, int b); 
+    }
+    ```
+
+    ```java
+    public class Target implements TargetInterface {
+        @Override
+        public int add(int a, int b) { return a + b; }
+    }
+    ```
+
+    
+
+- 增强方式：（invoke方法中）
+
+    1. 增强**返回值**：通过**对`return`返回值的修改**
+    2. 增强**参数列**表：通过**`method.getName()`判断要增强的方法**，并对**参数`args[]`数组进行修改**
+    3. 增强**方法体**执行逻辑：**反射方法`invoke()`执行前后修改**
+
+*   示例
+
+    ```java
+    interface Human{
+      String getBelief();
+      void eat(String food);
+    }
+    
+    //被代理类
+    class SuperMan implements Human{
+    
+      @Override
+      public String getBelief() {
+        return "I believe I can fly!";
+      }
+    
+      @Override
+      public void eat(String food) {
+        System.out.println("我喜欢吃" + food);
+      }
+    }
+    
+    /*
+    要想实现动态代理，需要解决的问题？
+    问题一：如何根据加载到内存中的被代理类，动态的创建一个代理类及其对象。
+    问题二：当通过代理类的对象调用方法a时，如何动态的去调用被代理类中的同名方法a。
+     */
+    
+    class ProxyFactory{
+      //调用此方法，返回一个代理类的对象。解决问题一
+      public static Object getProxyInstance(Object obj){//obj:被代理类的对象
+        MyInvocationHandler handler = new MyInvocationHandler();
+        handler.bind(obj);
+        return Proxy.newProxyInstance(obj.getClass().getClassLoader(),obj.getClass().getInterfaces(),handler);
+      }
+    }
+    
+    class MyInvocationHandler implements InvocationHandler{
+    
+      private Object obj;//需要使用被代理类的对象进行赋值
+    
+      public void bind(Object obj){
+        this.obj = obj;
+      }
+    
+      //当我们通过代理类的对象，调用方法a时，就会自动的调用如下的方法：invoke()
+      //将被代理类要执行的方法a的功能就声明在invoke()中
+      @Override
+      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    
+        //method:即为代理类对象调用的方法，此方法也就作为了被代理类对象要调用的方法
+        //obj:被代理类的对象
+        Object returnValue = method.invoke(obj,args);
+    
+        util.method2();
+    
+        //上述方法的返回值就作为当前类中的invoke()的返回值。
+        return returnValue;
+      }
+    }
+    
+    
+    public class ProxyTest {
+    
+      public static void main(String[] args) {
+        SuperMan superMan = new SuperMan();
+        //proxyInstance:代理类的对象
+        Human proxyInstance = (Human) ProxyFactory.getProxyInstance(superMan);
+        //当通过代理类对象调用方法时，会自动的调用被代理类中同名的方法
+        String belief = proxyInstance.getBelief();
+        System.out.println(belief);
+        proxyInstance.eat("四川麻辣烫");
+    
+        System.out.println("*****************************");
+    
+        NikeClothFactory nikeClothFactory = new NikeClothFactory();
+        ClothFactory proxyClothFactory = (ClothFactory) ProxyFactory.getProxyInstance(nikeClothFactory);
+        proxyClothFactory.produceCloth();
+      }
+    }
+    ```
+
+    
+
+
+
+### 基于子类的动态代理cglib
+
+* 提供者：第三方的 CGLib，如果报 asmxxxx 异常，需要导入 `asm.jar`或`org.springframework.cglib.proxy`
+
+* 要求：被代理类不能用 final 修饰的类（最终类）。 
+
+    ```java
+    public static void  main(String[] args) {
+        final Actor actor = new Actor();      
+        Actor cglibActor = (Actor) Enhancer.create(actor.getClass(), new MethodInterceptor() {
+            /** 
+    		 * 执行被代理对象的任何方法，都会经过该方法。在此方法内部就可以对被代理对象的任何 方法进行增强。     
+    		 * 参数：     
+    		   *  前三个和基于接口的动态代理是一样的。     
+    		   *  MethodProxy：当前执行方法的代理对象。     
+    		   *  返回值：当前执行方法的返回值     
+    		 */    
+            @Override    
+            public Object intercept(Object proxy, 
+                                    Method method, 
+                                    Object[] args, 
+                                    MethodProxy methodProxy) throws Throwable {
+                String name = method.getName();
+                Float money = (Float) args[0];
+                Object rtValue = null;     
+                if("basicAct".equals(name)){ 
+                    //基本演出      
+                    if(money > 2000){       
+                        rtValue = method.invoke(actor, money/2); 
                     }     
-                    return rtValue;    
                 } 
-            });     
-            cglibActor.basicAct(10000); 
-            cglibActor.dangerAct(100000); 
-        }
-        ```
+                if("dangerAct".equals(name)){ 
+                    //危险演出      
+                    if(money > 5000){ 
+                        rtValue = method.invoke(actor, money/2);      
+                    } 
+                }     
+                return rtValue;    
+            } 
+        });     
+        cglibActor.basicAct(10000); 
+        cglibActor.dangerAct(100000); 
+    }
+    ```
 
 
+
+
+
+### AOP—Aspect Orient Programming
+
+前面介绍的Proxy和InvocationHandler，很难看出这种动态代理的优势，下面介绍一种更实用的动态代理机制。
+
+*   使用Proxy生成一个动态代理时，往往并不会凭空产生一个动态代理，这样没有太大的意义。通常都是为指定的目标对象生成动态代理
+
+*   这种动态代理在AOP中被称为AOP代理，AOP代理可代替目标对象，AOP代理包含了目标对象的全部方法。但AOP代理中的方法与目标对象的方法存在差异 : AOP代理里的方法可以在执行目标方法之前、之后插入一些通用处理
+
+    <img src="images/image-20191105004811049.png" alt="image-20191105004811049" style="zoom:50%;" />
+
+```java
+interface Human{
+  String getBelief();
+  void eat(String food);
+}
+
+//被代理类
+class SuperMan implements Human{
+
+  @Override
+  public String getBelief() {
+    return "I believe I can fly!";
+  }
+
+  @Override
+  public void eat(String food) {
+    System.out.println("我喜欢吃" + food);
+  }
+}
+
+class HumanUtil{
+
+  public void method1(){
+    System.out.println("====================通用方法一====================");
+  }
+  public void method2(){
+    System.out.println("====================通用方法二====================");
+  }
+}
+
+/*
+要想实现动态代理，需要解决的问题？
+问题一：如何根据加载到内存中的被代理类，动态的创建一个代理类及其对象。
+问题二：当通过代理类的对象调用方法a时，如何动态的去调用被代理类中的同名方法a。
+ */
+
+class ProxyFactory{
+  //调用此方法，返回一个代理类的对象。解决问题一
+  public static Object getProxyInstance(Object obj){//obj:被代理类的对象
+    MyInvocationHandler handler = new MyInvocationHandler();
+    handler.bind(obj);
+    return Proxy.newProxyInstance(obj.getClass().getClassLoader(),obj.getClass().getInterfaces(),handler);
+  }
+}
+
+class MyInvocationHandler implements InvocationHandler{
+
+  private Object obj;//需要使用被代理类的对象进行赋值
+
+  public void bind(Object obj){
+    this.obj = obj;
+  }
+
+  //当我们通过代理类的对象，调用方法a时，就会自动的调用如下的方法：invoke()
+  //将被代理类要执行的方法a的功能就声明在invoke()中
+  @Override
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+    HumanUtil util = new HumanUtil();
+    util.method1();
+
+    //method:即为代理类对象调用的方法，此方法也就作为了被代理类对象要调用的方法
+    //obj:被代理类的对象
+    Object returnValue = method.invoke(obj,args);
+
+    util.method2();
+
+    //上述方法的返回值就作为当前类中的invoke()的返回值。
+    return returnValue;
+  }
+}
+
+
+public class ProxyTest {
+
+  public static void main(String[] args) {
+    SuperMan superMan = new SuperMan();
+    //proxyInstance:代理类的对象
+    Human proxyInstance = (Human) ProxyFactory.getProxyInstance(superMan);
+    //当通过代理类对象调用方法时，会自动的调用被代理类中同名的方法
+    String belief = proxyInstance.getBelief();
+    System.out.println(belief);
+    proxyInstance.eat("四川麻辣烫");
+
+    System.out.println("*****************************");
+
+    NikeClothFactory nikeClothFactory = new NikeClothFactory();
+    ClothFactory proxyClothFactory = (ClothFactory) ProxyFactory.getProxyInstance(nikeClothFactory);
+    proxyClothFactory.produceCloth();
+  }
+}
+```
 
