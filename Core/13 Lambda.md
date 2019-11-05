@@ -1,10 +1,10 @@
-# 9 Lambda
+# 13 Lambda
 
 在数学中，函数就是有输入量、输出量的一套计算方案，也就是“拿什么东西做什么事情”。相对而言，**面向对象**过分强调“必须**通过对象的形式来做事情**”，而**函数式思想**则尽量忽略面向对象的复杂语法——**强调做什么及结果，而不是以什么形式做**。
 
-面向对象的思想：做一件事情,找一个能解决这个事情的对象,调用对象的方法,完成事情.
+面向对象的思想：做一件事情，找一个能解决这个事情的对象，调用对象的方法,完成事情.
 
-函数式编程思想：只要能获取到结果,谁去做的,怎么做的都不重要,重视的是结果,不重视过程
+函数式编程思想：只要能获取到结果，谁去做的，怎么做的都不重要，重视的是结果，不重视过程
 
 - 冗余的Runnable代码分析
 
@@ -21,15 +21,15 @@
 
 - 编程思想转换
 
-    **做什么**，而不是怎么做，只要能够更好地达 到目的，过程与形式其实并不重要。2014年3月Oracle所发布的Java 8中，加入了Lambda表达式的重量级新特性，为我们打开了新世界的大门。 
+    **做什么**，而不是怎么做，只要能够更好地达到目的，过程与形式其实并不重要。2014年3月Oracle所发布的Java 8中，加入了Lambda表达式的重量级新特性，为我们打开了新世界的大门。 
 
 
 
-## 9.1 函数式接口
+## 13.1 函数式接口
 
 函数式接口在Java中是指：**有且仅有一个抽象方法的接口**。可以适用于Lambda使用的接口，只有确保接口为函数式接口，Java中的Lambda才能顺利地进行**推导**。 
 
-> 备注：“语法糖”是指使用更加方便，但是原理不变的代码语法。例如在遍历集合时使用的for-each语法，其实 底层的实现原理仍然是迭代器，这便是“语法糖”。从应用层面来讲，Java中的Lambda可以被当做是匿名内部 类的“语法糖”，但是二者在原理上是不同的。
+> 备注：“语法糖”是指使用更加方便，但是原理不变的代码语法。例如在遍历集合时使用的for-each语法，其实底层的实现原理仍然是迭代器，这便是“语法糖”。从应用层面来讲，Java中的Lambda可以被当做是匿名内部类的“语法糖”，但是二者在原理上是不同的。
 
 - **格式**
 
@@ -40,15 +40,13 @@
     }
     ```
 
-- **@FunctionalInterface注解**
+- **`@FunctionalInterface`注解**
 
     Java 8中专门为函数式接口引入的注解，可用于一个接口的定义上。一旦使用该注解来定义接口，**编译器将会强制检查**该接口是否确实有且仅有一个抽象方法，否则将会报错。不使用该注解也可以定义函数式接口。
 
 
 
-## 9.2 函数式编程
-
-### 9.2.1 Lambda格式
+## 13.2 函数式编程
 
 - Lambda表达式的标准格式为
 
@@ -57,18 +55,15 @@
     ```
 
     - 小括号内的语法与传统方法**参数列表一致**：无参数则留空；多个参数则用逗号分隔。 
-    - -> 是新引入的语法格式，代表**指向动作**。 
+    - `->` 是新引入的语法格式，代表**指向动作**。 
     - 大括号内的语法与传统**方法体**要求基本一致。 
 
 - 无参数返回值
 
     ```java
-    new Thread( () ‐> {
-        	System.out.println("多线程任务执行！")).start(); // 启动线程
-    	}
-    ).start();	
+    new Thread( () ‐>  System.out.println("多线程任务执行！")).start());	
     ```
-
+    
 - 有参数和返回值
 
     ```java
@@ -93,17 +88,19 @@
 
 - Lambda的语法非常简洁，完全没有面向对象复杂的束缚。但是使用时有几个问题需要特别注意： 
 
-    - 使用Lambda必须具有==**函数式接口**==。
+    - 使用Lambda必须具有**函数式接口**，其本质就是一个**函数式接口的实例**
 
-        无论是JDK内置的 Runnable 、 Comparator 接口还是自定义的接口，只有当接口中的抽象方法存在且唯一 时，才可以使用Lambda。 
+        无论是JDK内置的 Runnable 、 Comparator 接口还是自定义的接口，只有当接口中的抽象方法存在且唯一时，才可以使用Lambda。 
 
-    - 使用Lambda必须==**具有上下文推断**==。
+    - 使用Lambda必须**具有上下文类型推断**
 
         方法的参数或局部变量类型必须为**Lambda对应的接口类型**，才能使用Lambda作为该接口的实例。
+        
+    - 若 Lambda 表达式抛出一个受检异常（即非运行时异常），那么该异常需要在目标接口的抽象方法上进行声明
 
 
 
-### 9.2.2 Lambda的延迟执行
+## 13.3 Lambda的延迟执行
 
 有些场景的代码执行后，结果不一定会被使用，从而造成性能浪费。而Lambda表达式是延迟执行的，这正好可以 作为解决方案，提升性能。 
 
@@ -157,41 +154,55 @@
 
 
 
-## 9.3 常用的函数式接口
+## 13.4 常用的函数式接口
 
 JDK提供了大量常用的函数式接口以丰富Lambda的典型使用场景，它们主要在**`java.util.function`**中提供。 
 
 `java.lang.Runnable`、`java.util.Comparator`不再上述包中，但也是函数式接口
 
-### 9.3.1 Supplier
+>   如下函数式接口强调的是状态的改变！不在乎具体实现细节！具体实现交给 Lambda 来完成！
 
-`java.util.function.Supplier<T> `接口仅包含一个无参的方法： `T get() `。用来**获取一个泛型参数指定类型的==对象==数据**。由于这是一个函数式接口，这也就意味着对应的Lambda表达式**需要“对外提供”一个符合泛型类型**的对象数据。这个接口也称为==**生产型接口**==。
+Java 内置四大核心函数式接口
 
-```java
-//求数组元素最大值
-public static void main(String[] args) {
-    int[] arr = {1, 22, 55, 333, 66};
-    int m = getMax(arr,() -> {
+![image-20191105234610241](images/image-20191105234610241.png)
+
+其他接口
+
+![image-20191105234644979](images/image-20191105234644979.png)
+
+### Supplier
+
+`java.util.function.Supplier<T> `用来**获取一个泛型参数指定类型的对象数据**。由于这是一个函数式接口，这也就意味着对应的Lambda表达式**需要“对外提供”一个符合泛型类型**的对象数据。这个接口也称为**生产型接口**。
+
+*   抽象方法 `T get() `
+
+    ```java
+    //求数组元素最大值
+    public static void main(String[] args) {
+      int[] arr = {1, 22, 55, 333, 66};
+      int m = getMax(arr,() -> {
         int max = arr[0];
         for (int i = 1; i < arr.length; i++) {
-            if (arr[i] > max)
-                max = arr[i];
+          if (arr[i] > max)
+            max = arr[i];
         }
         return max;
-    });
-    System.out.println(m);
-}
+      });
+      System.out.println(m);
+    }
+    
+    public static int getMax(int[] arr,Supplier<Integer> supplier) {
+      return supplier.get();
+    }
+    ```
 
-public static int getMax(int[] arr,Supplier<Integer> supplier) {
-    return supplier.get();
-}
-```
+    
 
-### <span name="Consumer">9.3.2 Consumer</span>
+### Consumer
 
-`java.util.function.Consumer<T> `接口则正好与`Supplier`接口相反，它不是生产一个数据。==**消费型接口**==。
+`java.util.function.Consumer<T> `接口则正好与`Supplier`接口相反，它不是生产一个数据。**消费型接口**。
 
-- **抽象方法` void accept(T t) `**
+- 抽象方法` void accept(T t) `
 
     > 意为**消费一个指定泛型的数据**。
 
@@ -208,7 +219,7 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
     }           
     ```
 
-- **默认方法`Consumer<T> andThen(Consumer<T> c)` **
+- 默认方法`default Consumer<T> andThen(Consumer<T> c)` 
 
     > 如果一个方法的参数和返回值全都是 Consumer 类型，那么就可以实现效果：**消费数据的时候，首先做一个操作， 然后再做一个操作，实现组合，哪个写前面则先消费**。返回值是本身，可以用链式编程，三个、四个操作都行。这个方法就是 Consumer 接口中的default方法 andThen 。
 
@@ -235,11 +246,11 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
 
 
 
-### <span name="Predicate">9.3.3 Predicate</span>
+### Predicate
 
-有时候我们需要==**对某种类型的数据进行判断**==，从而得到一个boolean值结果。这时可以使用 `java.util.function.Predicate<T> `接口。 
+有时候我们需要**对某种类型的数据进行判断**，从而得到一个boolean值结果。这时可以使用 `java.util.function.Predicate<T> `接口。 
 
-- **抽象方法： `boolean test(T t)` **
+- 抽象方法： `boolean test(T t)` 
 
     ```java
     //判断字符串长度是否大于3
@@ -254,13 +265,13 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
     }
     ```
 
-- **默认方法：`Predicate<T> and(Predicate<? super T> other)` **，与
+- 默认方法：`Predicate<T> and(Predicate<? super T> other)` ，与
 
-- **默认方法：`Predicate<T> or(Predicate<? super T> other)` **，或
+- 默认方法：`Predicate<T> or(Predicate<? super T> other)` ，或
 
-- **默认方法：`Predicate<T> negate()` **，非
+- 默认方法：`Predicate<T> negate()` ，非
 
-- **`static <T> Predicate<T> isEqual(Object targetRef)`**，相等，根据`Objects.equals(O,O)`
+- 静态方法：`static <T> Predicate<T> isEqual(Object targetRef)`，相等，根据`Objects.equals(O,O)`
 
     ```java
     System.out.println(Predicate.isEqual("test").test("test"));//true，返回Predicate实例，之后也可以用其他方法
@@ -304,13 +315,15 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
     }
     ```
 
-### <span name="Function">9.3.4 Function</span>
 
-`java.util.function.Function<T,R>` 接口用来==**根据一个类型的数据得到另一个类型的数据**==，前者称为前置条件， 后者称为后置条件。 
 
-- **抽象方法： `R apply(T t) `**：根据类型T的参数获取类型R的结果。如`String`转`Integer`
+### Function
 
-- **默认方法：`Function<T,V> andThen(Function<? super R,? extends V> after)`**，用来**组合操作**
+`java.util.function.Function<T,R>` 接口用来**根据一个类型的数据得到另一个类型的数据**，前者称为前置条件， 后者称为后置条件。 
+
+- 抽象方法： `R apply(T t) `：根据类型T的参数获取类型R的结果。如`String`转`Integer`
+
+- 默认方法：`Function<T,V> andThen(Function<? super R,? extends V> after)`，用来**组合操作**
 
     ```java
     public static void main(String[] args) {
@@ -350,13 +363,13 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
 
 
 
-## 9.4 方法引用
+## 13.5 方法引用
 
 > 在使用Lambda表达式的时候，我们实际上传递进去的代码就是一种解决方案：拿什么参数做什么操作。那么考虑 一种情况：如果我们在Lambda中所指定的操作方案，已经有地方存在相同方案，那是否还有必要再写重复逻辑？ 
 
-### 9.4.1 方法引用符
+### 引用符::
 
-**双冒号`::` 为引用运算符**，而它所在的**表达式被称为方法引用**。如果Lambda要表达的函数方案已经存在于某个方 法的实现中，那么则可以通过双冒号来引用该方法作为Lambda的替代者。 
+**双冒号`::` 为引用运算符**，而它所在的**表达式被称为方法引用**。如果Lambda要表达的**函数方案（方法体）已经存在于某个方法的实现中（出入参一致仅代表对象::非静态方法和类名::静态方法）**，那么则可以通过双冒号来引用该方法作为Lambda的替代者。 
 
 **语义分析**
 
@@ -369,19 +382,50 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
 
 第二种等效写法的语义是指：直接让 `System.out` 中的 `println` 方法来取代Lambda
 
-> 注:Lambda 中 传递的参数 一定是方法引用中 的那个方法可以接收的类型,否则会抛出异常 
+> 注：Lambda 中传递的参数 一定是方法引用中的那个方法可以接收的类型，否则会抛出异常 
 
 **推导与省略**
 
-如果使用Lambda，那么根据“可推导就是可省略”的原则，**无需指定参数类型**，**也无需指定的重载形式**——它们都 将被自动推导。而如果使用方法引用，也是同样可以根据上下文进行推导。
+如果使用Lambda，那么根据“可推导就是可省略”的原则，**无需指定参数类型**，**也无需指定的重载形式**——它们都将被自动推导。而如果使用方法引用，也是同样可以根据上下文进行推导。
 
 函数式接口是Lambda的基础，而方法引用是Lambda的孪生兄弟。 
 
-### 9.4.2 通过对象名引用成员方法
+### 对象::非静态方法
 
 与上例相同。对象已经存在，方法也存在，可以使用`对象名::方法名`替代lambda
 
-### 9.4.3 通过类名引用静态方法
+```java
+//Consumer中的void accept(T t)
+//PrintStream中的void println(T t)
+@Test
+public void test1() {
+  Consumer<String> con1 = str -> System.out.println(str);
+  con1.accept("北京");
+
+  System.out.println("*******************");
+  PrintStream ps = System.out;
+  Consumer<String> con2 = ps::println;
+  con2.accept("beijing");
+}
+
+//Supplier中的T get()
+//Employee中的String getName()
+@Test
+public void test2() {
+  Employee emp = new Employee(1001,"Tom",23,5600);
+
+  Supplier<String> sup1 = () -> emp.getName();
+  System.out.println(sup1.get());
+
+  System.out.println("*******************");
+  Supplier<String> sup2 = emp::getName;
+  System.out.println(sup2.get());
+}
+```
+
+
+
+### 类名::静态方法
 
 类已经存在，静态方法也存在，可以使用`类名::静态方法`替代lambda
 
@@ -389,18 +433,62 @@ public static int getMax(int[] arr,Supplier<Integer> supplier) {
 public interface Calcable {
     int calc(int num);    
 }
-```
-
-```java
+// -------------------------------
 public static void main(String[] args) {
     method(‐10, Math::abs);        
 } 
 private static void method(int num, Calcable lambda) {
     System.out.println(lambda.calc(num));        
-}   
+}  
 ```
 
-### 9.4.4 通过super引用成员方法 
+```java
+//Comparator中的int compare(T t1,T t2)
+//Integer中的int compare(T t1,T t2)
+@Test
+public void test3() {
+  Comparator<Integer> com1 = (t1,t2) -> Integer.compare(t1,t2);
+  System.out.println(com1.compare(12,21));
+
+  System.out.println("*******************");
+
+  Comparator<Integer> com2 = Integer::compare;
+  System.out.println(com2.compare(12,3));
+
+}
+
+//Function中的R apply(T t)
+//Math中的Long round(Double d)
+@Test
+public void test4() {
+  Function<Double,Long> func = new Function<Double, Long>() {
+    @Override
+    public Long apply(Double d) {
+      return Math.round(d);
+    }
+  };
+
+  System.out.println("*******************");
+
+  Function<Double,Long> func1 = d -> Math.round(d);
+  System.out.println(func1.apply(12.3));
+
+  System.out.println("*******************");
+
+  Function<Double,Long> func2 = Math::round;
+  System.out.println(func2.apply(12.6));
+}
+```
+
+### 类名::非静态方法
+
+当函数式接口方法的第一个参数是需要引用方法的调用者，并且第二个参数是需要引用方法的参数（或无参数）时，可以使用`类名::非静态方法`替代lambda
+
+
+
+
+
+### 通过super引用成员方法 
 
 如果存在继承关系，当Lambda中需要出现super调用时，也可以使用方法引用进行替代。
 
@@ -436,7 +524,7 @@ public class Man extends Human {
 }
 ```
 
-### 9.4.5 通过this引用成员方法 
+### 通过this引用成员方法 
 
 this代表当前对象，如果需要引用的方法就是当前类中的成员方法，那么可以使用`this::成员方法`的格式来使用方法引用
 
@@ -462,25 +550,21 @@ public class Husband {
 }
 ```
 
-### 9.4.6 类的构造器引用
+## 13.6 构造器引用
 
-由于构造器的名称与类名完全一样，并不固定。所以构造器引用使用`类名称::new` 的格式表示
+和方法引用类似，函数式接口的抽象方法的形参列表和构造器的形参列表一致，抽象方法的返回值类型即为构造器所属的类的类型。由于构造器的名称与类名完全一样，并不固定。所以构造器引用使用`类名称::new` 的格式表示
 
 ```java
 public class Person {
     private String name;
     ...
 }
-```
-
-```java
+// ------------------
 @FunctionalInterface
 public interface PersonBuilder {
     Person buildPerson(String name);
 }
-```
-
-```java
+// ------------------
 public class Demo {
     public static void printName(String name, PersonBuilder builder) {
         System.out.println(builder.buildPerson(name).getName());
@@ -492,7 +576,59 @@ public class Demo {
 }
 ```
 
-### 9.4.7 数组的构造器引用
+```java
+//Supplier中的T get()
+//Employee的空参构造器：Employee()
+@Test
+public void test1(){
+
+  Supplier<Employee> sup = new Supplier<Employee>() {
+    @Override
+    public Employee get() {
+      return new Employee();
+    }
+  };
+  System.out.println("*******************");
+
+  Supplier<Employee>  sup1 = () -> new Employee();
+  System.out.println(sup1.get());
+
+  System.out.println("*******************");
+
+  Supplier<Employee>  sup2 = Employee :: new;
+  System.out.println(sup2.get());
+}
+
+//Function中的R apply(T t)
+@Test
+public void test2(){
+  Function<Integer,Employee> func1 = id -> new Employee(id);
+  Employee employee = func1.apply(1001);
+  System.out.println(employee);
+
+  System.out.println("*******************");
+
+  Function<Integer,Employee> func2 = Employee :: new;
+  Employee employee1 = func2.apply(1002);
+  System.out.println(employee1);
+
+}
+
+//BiFunction中的R apply(T t,U u)
+@Test
+public void test3(){
+  BiFunction<Integer,String,Employee> func1 = (id,name) -> new Employee(id,name);
+  System.out.println(func1.apply(1001,"Tom"));
+
+  System.out.println("*******************");
+
+  BiFunction<Integer,String,Employee> func2 = Employee :: new;
+  System.out.println(func2.apply(1002,"Tom"));
+
+}
+```
+
+## 13.7 数组的构造器引用
 
 数组也是`Object` 的子类对象，所以同样**具有构造器**，只是语法稍有不同
 
@@ -501,9 +637,6 @@ public class Demo {
 public interface ArrayBuilder {
     int[] buildArray(int length);
 }
-```
-
-```java
 public class Demo {
     private static int[] initArray(int length, ArrayBuilder builder) {
         return builder.buildArray(length);
@@ -515,6 +648,23 @@ public class Demo {
 }
 ```
 
+```java
+//Function中的R apply(T t)
+@Test
+public void test4(){
+  Function<Integer,String[]> func1 = length -> new String[length];
+  String[] arr1 = func1.apply(5);
+  System.out.println(Arrays.toString(arr1));
+
+  System.out.println("*******************");
+
+  Function<Integer,String[]> func2 = String[] :: new;
+  String[] arr2 = func2.apply(10);
+  System.out.println(Arrays.toString(arr2));
+
+}
+```
+
 
 
 
@@ -523,65 +673,65 @@ public class Demo {
 
 ## 习题
 
-- Pedicate接口使用
+### Pedicate接口使用
 
-    ```java
-    Integer[] arr = {-12345, 9999, 520, 0, -38, -7758520, 941213};
-    
-    Predicate<Integer> p1 = i -> i >= 0; //使用lambda表达式创建Predicate对象p1,p1能判断整数是否是自然数
-    Predicate<Integer> p2 = i -> Math.abs(i) > 100; //使用lambda表达式创建Predicate对象p2,p2能判断整数的绝对值是否大于100
-    Predicate<Integer> p3 = i -> i % 2 == 0; //使用lambda表达式创建Predicate对象p3,p3能判断整数是否是偶数
-    
-    int count1 = 0;
-    int count2 = 0;
-    int count3 = 0;
-    int count4 = 0;
-    for (Integer i : arr) {
-        if (p1.test(i))
-            count1++;
-        if (p1.negate().test(i))
-            count2++;
-        if (p2.and(p3).test(i))
-            count3++;
-        if (p1.negate().or(p3).test(i))
-            count4++;
+```java
+Integer[] arr = {-12345, 9999, 520, 0, -38, -7758520, 941213};
+
+Predicate<Integer> p1 = i -> i >= 0; //使用lambda表达式创建Predicate对象p1,p1能判断整数是否是自然数
+Predicate<Integer> p2 = i -> Math.abs(i) > 100; //使用lambda表达式创建Predicate对象p2,p2能判断整数的绝对值是否大于100
+Predicate<Integer> p3 = i -> i % 2 == 0; //使用lambda表达式创建Predicate对象p3,p3能判断整数是否是偶数
+
+int count1 = 0;
+int count2 = 0;
+int count3 = 0;
+int count4 = 0;
+for (Integer i : arr) {
+    if (p1.test(i))
+        count1++;
+    if (p1.negate().test(i))
+        count2++;
+    if (p2.and(p3).test(i))
+        count3++;
+    if (p1.negate().or(p3).test(i))
+        count4++;
+}
+System.out.println("自然数个数:"+count1);
+System.out.println("负整数个数:"+count2);
+System.out.println("绝对值大于100的偶数的个数:"+count3);
+System.out.println("负整数或偶数的数的个数:"+count4);
+```
+
+Function接口使用
+
+```java
+/**
+         * 1.	使用lambda表达式分别将以下功能封装到Function对象中
+         * a)	求Integer类型ArrayList中所有元素的平均数
+         * b)	将Map<String,Integer>中value存到ArrayList<Integer>中
+         */
+Function<ArrayList<Integer>, Integer> avg = list -> {
+    int sum = 0;
+    for (Integer i : list) {
+        sum += i;
     }
-    System.out.println("自然数个数:"+count1);
-    System.out.println("负整数个数:"+count2);
-    System.out.println("绝对值大于100的偶数的个数:"+count3);
-    System.out.println("负整数或偶数的数的个数:"+count4);
-    ```
+    return sum / list.size();
+};
 
-- Function接口使用
+Function<Map<String, Integer>, ArrayList<Integer>> change = map -> {
+    ArrayList<Integer> list = new ArrayList<>();
+    map.entrySet().stream().forEach(s -> list.add(s.getValue()));//或用values，addAll
+    return list;
+};
 
-    ```java
-    /**
-             * 1.	使用lambda表达式分别将以下功能封装到Function对象中
-             * a)	求Integer类型ArrayList中所有元素的平均数
-             * b)	将Map<String,Integer>中value存到ArrayList<Integer>中
-             */
-    Function<ArrayList<Integer>, Integer> avg = list -> {
-        int sum = 0;
-        for (Integer i : list) {
-            sum += i;
-        }
-        return sum / list.size();
-    };
-    
-    Function<Map<String, Integer>, ArrayList<Integer>> change = map -> {
-        ArrayList<Integer> list = new ArrayList<>();
-        map.entrySet().stream().forEach(s -> list.add(s.getValue()));//或用values，addAll
-        return list;
-    };
-    
-    HashMap<String, Integer> students = new HashMap<>();
-    students.put("岑小村", 59);
-    students.put("谷天洛", 82);
-    students.put("渣渣辉", 98);
-    students.put("蓝小月", 65);
-    students.put("皮几万", 70);
-    
-    int avg_score = change.andThen(avg).apply(students);
-    System.out.println(avg_score);
-    ```
+HashMap<String, Integer> students = new HashMap<>();
+students.put("岑小村", 59);
+students.put("谷天洛", 82);
+students.put("渣渣辉", 98);
+students.put("蓝小月", 65);
+students.put("皮几万", 70);
+
+int avg_score = change.andThen(avg).apply(students);
+System.out.println(avg_score);
+```
 
