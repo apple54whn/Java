@@ -307,97 +307,197 @@ list.stream()
 ### 归约
 
 *   `reduce(T iden, BinaryOperator b)`
-    可以将流中元素反复结合起来，得到一 个值。返回 `T`
+    可以将流中元素反复结合起来，得到一个值，返回 `T`，`iden`为初始值
 
 *   `reduce(BinaryOperator b)`
-    可以将流中元素反复结合起来，得到一 个值。返回 `Optional<T>`
+    可以将流中元素反复结合起来，得到一个值。返回 `Optional<T>`
 
     >   map 和 reduce 的连接通常称为 map-reduce 模式，因 Google 用它来进行网络搜索而出名。 
+    
+    ```java
+    @Test
+    public void test3(){
+      // reduce(T identity, BinaryOperator)——可以将流中元素反复结合起来，得到一个值。返回 T
+      
+      // 练习1：计算1-10的自然数的和
+      List<Integer> list = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+      Integer sum = list.stream().reduce(0, Integer::sum);// 0 为初始值
+      System.out.println(sum);// 55
+    
+    
+      // reduce(BinaryOperator) ——可以将流中元素反复结合起来，得到一个值。返回 Optional<T>
+      // 练习2：计算公司所有员工工资的总和
+      List<Employee> employees = EmployeeData.getEmployees();
+      Stream<Double> salaryStream = employees.stream().map(Employee::getSalary);
+      Optional<Double> sumMoney = salaryStream.reduce(Double::sum);
+      // Optional<Double> sumMoney = salaryStream.reduce((d1,d2) -> d1 + d2);
+      System.out.println(sumMoney.get());
+    }
+    ```
 
 
 
+### 收集
 
+*   `collect(Collector c)`
+    将流转换为其他形式。接收一个 `Collector` 接口的实现，用于给`Stream`中元素做汇总的方法。Collector 接口中方法的实现决定了如何对流执行收集的操作(如收集到 List、Set、 Map)。另外，`Collectors` 实用类提供了很多静态方法，可以方便地创建常见收集器实例， 具体方法与实例如下表:
 
+*   `static List<T> toList`
 
+    **把流中元素收集到List**
 
-* `Stream<T> filter(Predicate<? super T> predicate)`：
+    ```java
+    List<Employee> emps= list.stream().collect(Collectors.toList());
+    ```
 
-    返回==**与给定谓词匹配**==的此流的元素组成的流，<a href="#Predicate">接口</a>
+*   `static Set<T> toSet`
 
-* `<R> Stream<R> map(Function<? super T,? extends R> mapper)`：
+    **把流中元素收集到Set**
 
-    将流的元素==**转换(映射)**==到另一流，<a href="#Function">接口</a>
+    ```java
+    Set<Employee> emps= list.stream().collect(Collectors.toSet());
+    ```
 
-* `Stream<T> limit(long maxSize)`：
+*   `static Collection<T> toCollection `
 
-    对流进行==**截取前maxSize个**==
+    **把流中元素收集到创建的集合**
 
-* `Stream<T> skip(long n)`：
+    ```java
+    Collection<Employee> emps =list.stream().collect(Collectors.toCollection(ArrayList::new));
+    ```
 
-    截取==**跳过前n个**==元素的流，若流当前长度小于等于n会得到长度为0的空流
+*   `Object[] toArray()`
 
-* `static <T> Stream<T> concat(Stream<? extends T> a, Stream<? extends T> b)`：
+    **转为数组**，返回包含此流的元素的数组
 
-    ==**合并流**==，静态方法
+    ```java
+    //略
+    ```
 
-* `<R,A> R collect(Collector<? super T,A,R> collector)`：
+*   `<A> A[] toArray(IntFunction<A[]> generator)`
 
-    规约操作；转为List，如`Collectors.toList()`
+    通过**方法引用指定创建数组**类型如`String[]::new`
 
-**终结方法**：**返回值类型不再是 Stream 接口自身**类型的方法，因此不再支持类似 StringBuilder 那样的链式调用。本小节中，终结方法包括 `count` 和 `forEach` 方法。[其他查看API](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html)。
+    ```java
+    // 略
+    ```
 
-* `void forEach(Consumer<? super T> action)`：
+*   `static <T> Stream<T> concat(Stream<? extends T> a, Stream<? extends T> b)`
 
-    对此流的每个元素==**逐一处理**==。<a href="#Consumer">接口</a>
+    **合并流**
 
-* `long count()`：
-
-    返回此流中元素的==**数量**==
-
-* `Object[] toArray()`：
-
-    ==**转为数组**==，返回包含此流的元素的数组
-
-* `<A> A[] toArray(IntFunction<A[]> generator)`：
-
-    通过==**方法引用指定创建数组**==类型，如`String[]::new`
-
-```java
-public static void main(String[] args) {
-    /**
-         * 1. 第一个队伍只要名字为3个字的成员姓名；存储到一个新集合中。
-         * 2. 第一个队伍筛选之后只要前3个人；存储到一个新集合中。
-         * 3. 第二个队伍只要姓张的成员姓名；存储到一个新集合中。
-         * 4. 第二个队伍筛选之后不要前2个人；存储到一个新集合中。
-         * 5. 将两个队伍合并为一个队伍；存储到一个新集合中。
-         * 6. 根据姓名创建 Person 对象；存储到一个新集合中。
-         * 7. 打印整个队伍的Person对象信息。
-         */
-    ArrayList<String> one = new ArrayList<>();
-    one.add("迪丽热巴");
-    one.add("宋远桥");
-    one.add("苏星河");
-    one.add("石破天");
-    one.add("石中玉");
-    one.add("老子");
-    one.add("庄子");
-    one.add("洪七公");
-
-    ArrayList<String> two = new ArrayList<>();
-    two.add("古力娜扎");
-    two.add("张无忌");
-    two.add("赵丽颖");
-    two.add("张三丰");
-    two.add("尼古拉赵四");
-    two.add("张天爱");
-    two.add("张二狗");
-
+    ```java
     Stream<String> one2 = one.stream().filter(name -> name.length() == 3).limit(3);
     Stream<String> two2 = two.stream().filter(name -> name.startsWith("张")).skip(2);
     Stream.concat(one2, two2).map(name -> new Person(name)).forEach(name -> System.out.println(name));
+    ```
 
-}
-```
+*   `Long counting `
+
+    计算流中元素的个数 
+
+    ```java
+    long count = list.stream().collect(Collectors.counting());
+    ```
+
+*   `Integer summingInt`
+
+    对流中元素的整数属性求和
+
+    ```java
+    int total=list.stream().collect(Collectors.summingInt(Employee::getSalary));
+    ```
+
+*   `Double averagingInt`
+
+    计算流中元素Integer属性的平均值
+
+    ```java
+    double avg = list.stream().collect(Collectors.averagingInt(Employee::getSalary));
+    ```
+
+*   `IntSummaryStatistics summarizingInt `
+
+    收集流中Integer属性的统计值。如平均值
+
+    ```java
+    int SummaryStatisticsiss= list.stream().collect(Collectors.summarizingInt(Employee::getSalary));
+    ```
+
+*   `String joining `
+
+    连接流中每个字符串
+
+    ```java
+    String str= list.stream().map(Employee::getName).collect(Collectors.joining());
+    ```
+
+*   `Optional<T> maxBy `
+
+    根据比较器选择最大值
+
+    ```java
+    Optional<Emp>max= list.stream().collect(Collectors.maxBy(comparingInt(Employee::getSalary)));
+    ```
+
+*   `Optional<T> minBy`
+
+    根据比较器选择最小值 
+
+    ```java
+    Optional<Emp> min = list.stream().collect(Collectors.minBy(comparingInt(Employee::getSalary)));
+    ```
+
+*   `归约产生的类型  reducing `
+
+    从一个作为累加器的初始值开始， 利用BinaryOperator与流中元素逐个结合，从而归约成单个值
+
+    ```java
+    int total=list.stream().collect(Collectors.reducing(0, Employee::getSalar, Integer::sum));
+    ```
+
+*   `转换函数返回的类型 collectingAndThen `
+
+    包裹另一个收集器，对其结果转换函数
+
+    ```java
+    int how= list.stream().collect(Collectors.collectingAndThen(Collectors.toList(), List::size));
+    ```
+
+*   `Map<K, List<T>> groupingBy`
+
+    根据某属性值对流分组，属性为K 结果为V
+
+    ```java
+    Map<Emp.Status, List<Emp>> map= list.stream() .collect(Collectors.groupingBy(Employee::getStatus));
+    ```
+
+*   `Map<Boolean, List<T>> partitioningBy`
+
+    根据true或false进行分区
+
+    ```java
+    Map<Boolean,List<Emp>> vd = list.stream().collect(Collectors.partitioningBy(Employee::getManage));
+    ```
+
+    ```java
+    @Test
+    public void test4(){
+      // collect(Collector c)——将流转换为其他形式。接收一个 Collector接口的实现，用于给Stream中元素做汇总的方法
+      // 练习1：查找工资大于6000的员工，结果返回为一个List或Set
+    
+      List<Employee> employees = EmployeeData.getEmployees();
+      List<Employee> employeeList = employees.stream().filter(e -> e.getSalary() >6000).collect(Collectors.toList());
+    
+      employeeList.forEach(System.out::println);
+      System.out.println();
+      Set<Employee> employeeSet = employees.stream().filter(e -> e.getSalary() > 6000).collect(Collectors.toSet());
+    
+      employeeSet.forEach(System.out::println);
+    }
+    ```
+
+    
 
 
 
